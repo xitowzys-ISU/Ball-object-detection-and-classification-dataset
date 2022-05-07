@@ -40,12 +40,10 @@ def download_zip(url: str) -> zipfile.ZipFile:
             return None
 
 
-def _extract_img_balls(zip_file: zipfile.ZipFile, annotation):
+def _extract_img_balls(zip_file: zipfile.ZipFile, annotation: pd.DataFrame):
     global number_img_balls
 
-    filenames = annotation.filename
-
-    for idx, filename in enumerate(filenames):
+    for idx, filename in enumerate(annotation.filename):
         file_extension = filename[filename.rfind('.') + 1:]
         img_path = f"train/{filename}"
         img = zip_file.read(img_path)
@@ -96,7 +94,9 @@ def extract_imgs(zip_file: zipfile.ZipFile):
     with zip_file.open(annotation_filename) as afp:
         annotation = pd.read_csv(afp, index_col=False)
 
-        nones_filenames -= set(annotation.filename)
+        balls_img_fns = annotation.filename.to_list()
+        balls_img_fns = set(map(lambda s: f"train/{s}", balls_img_fns))
+        nones_filenames -= balls_img_fns
 
         _extract_img_balls(zip_file, annotation)
         _extract_img_no_balls(zip_file, nones_filenames)
@@ -111,9 +111,6 @@ def train_test_split(test_percent: float=0.33):
     
     if not test_dir.exists():
         test_dir.mkdir(parents=True)
-
-    
-    
 
 
 parser = ArgumentParser()
@@ -152,7 +149,7 @@ if __name__ == "__main__":
         print("Nothing to download from")
     else:
         url_list = set(url_list)
-        
+
         for url in url_list:
             try:
                 zip_file = download_zip(url)
