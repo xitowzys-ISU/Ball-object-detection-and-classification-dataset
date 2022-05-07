@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
 from pathlib import Path
-import shutil
 import requests, zipfile, io
 from tqdm.auto import tqdm
 import pandas as pd
@@ -152,8 +151,9 @@ if __name__ == "__main__":
 
         for url in url_list:
             try:
-                zip_file = download_zip(url)
-                extract_imgs(zip_file)
+                if url:
+                    zip_file = download_zip(url)
+                    extract_imgs(zip_file)
             except Exception() as e:
                 print(f"Cannot download from {url}")
                 print(e)
