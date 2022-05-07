@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
+import shutil
 import requests, zipfile, io
 from tqdm.auto import tqdm
 import pandas as pd
@@ -101,6 +102,20 @@ def extract_imgs(zip_file: zipfile.ZipFile):
         _extract_img_no_balls(zip_file, nones_filenames)
 
 
+def train_test_split(test_percent: float=0.33):
+    train_dir = DATASET_DIR / "train"
+    test_dir = DATASET_DIR / "test"
+
+    if not train_dir.exists():
+        train_dir.mkdir(parents=True)
+    
+    if not test_dir.exists():
+        test_dir.mkdir(parents=True)
+
+    
+    
+
+
 parser = ArgumentParser()
 parser.add_argument(
     "-u", "--url-file", 
@@ -136,6 +151,8 @@ if __name__ == "__main__":
     if not url_list:
         print("Nothing to download from")
     else:
+        url_list = set(url_list)
+        
         for url in url_list:
             try:
                 zip_file = download_zip(url)
